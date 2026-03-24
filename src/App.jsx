@@ -1,7 +1,7 @@
 import React from 'react';
-// import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 // Change this import in App.jsx
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+// import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // The rest of your App.jsx stays the same!
 import Nav from '../Components/Nav.jsx';
