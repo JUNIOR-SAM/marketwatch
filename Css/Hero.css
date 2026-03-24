@@ -1,0 +1,21 @@
+/* Pushes the hero section down so it doesn't hide behind your floating navbar */
+.hero-section {
+  padding-top: 60px; 
+  padding-bottom: 50px;
+}
+
+/* Styling the cards to look modern and clickable */
+.price-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.644);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Subtle lift effect when hovering over the cards */
+.price-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.411);
+}

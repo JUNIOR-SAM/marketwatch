@@ -1,0 +1,55 @@
+body {
+  background-color: #f8fafc;
+  font-family: 'Inter', system-ui, sans-serif; /* A clean font choice */
+  margin: 0;
+  padding-top: 100px; /* Pushes page content down so it doesn't hide behind the fixed navbar */
+}
+
+/* Centers the navbar wrapper and fixes it to the top */
+.nav-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: fixed; 
+  top: 20px; /* Floats slightly down from the very top */
+  z-index: 1000;
+  padding: 0 15px; /* Prevents touching the edges on very small mobile screens */
+}
+
+/* The actual 75% width navbar */
+.custom-navbar {
+  width: 75%;
+  background: rgba(255, 255, 255, 0.85) !important; /* Semi-transparent white */
+  backdrop-filter: blur(12px); /* The "Glass" blur effect */
+  border-radius: 50px; /* Pill shape */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Soft, elegant shadow */
+  padding: 10px 25px !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+/* Styling the links */
+.custom-navbar .nav-link {
+  color: #475569; /* Soft slate gray */
+  font-weight: 500;
+  margin: 0 10px;
+  transition: color 0.3s ease;
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .nav-link.active {
+  color: #10b981; /* Emerald green hover state */
+}
+
+/* Make it full width on mobile so it doesn't look cramped */
+@media (max-width: 991px) {
+  .custom-navbar {
+    width: 95%;
+    border-radius: 20px; /* Less rounded on mobile */
+  }
+  
+  .custom-navbar .nav-link {
+    text-align: center;
+    margin: 10px 0;
+  }
+}
