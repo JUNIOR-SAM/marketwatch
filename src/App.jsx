@@ -28,6 +28,7 @@ const AppContent = () => {
         {/* Main App Section */}
         <Route path="/dashboard" element={
           <>
+            <Nav />
             <Hero />
             <SearchVerify />
           </>
