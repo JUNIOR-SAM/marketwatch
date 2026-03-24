@@ -1,16 +1,32 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Brings in the React Router Link tool
+import { Link, useNavigate } from "react-router-dom"; 
+import { getAuth, signOut } from "firebase/auth"; // Import Firebase Auth tools
 import "../Css/Nav.css";
 
 const Nav = () => {
+    const navigate = useNavigate();
+    const auth = getAuth();
+
+    // The Logout Function
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            // After successful logout, send them to the sign-in page
+            navigate("/signin"); 
+            console.log("User logged out successfully");
+        } catch (error) {
+            console.error("Error logging out:", error.message);
+        }
+    };
+
     return (
         <div className="nav-wrapper">
             <nav className="navbar navbar-expand-lg custom-navbar">
                 <div className="container-fluid">
-                    {/* Brand Logo - Links to Home */}
+                    {/* Brand Logo - Now links to Dashboard/Home */}
                     <Link
                         className="navbar-brand fw-bold"
-                        to="/"
+                        to="/dashboard"
                         style={{ color: "#0f172a" }}
                     >
                         <span style={{ color: "#10b981" }}>Market</span>Watch
@@ -22,9 +38,6 @@ const Nav = () => {
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#navbarNav"
-                        aria-controls="navbarNav"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation"
                     >
                         <span className="navbar-toggler-icon"></span>
                     </button>
@@ -33,27 +46,39 @@ const Nav = () => {
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav ms-auto align-items-center">
                             <li className="nav-item">
-                                <Link className="nav-link active" to="/">
+                                <Link className="nav-link active" to="/dashboard">
                                     Home
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="/#prices-section">
-                                    Live Prices
-                                </a>{" "}
+                                {/* Fixed this to use Link for your new page */}
+                                <Link className="nav-link" to="/live-prices">
+                                    Market Terminal
+                                </Link>
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link" to="/report">
                                     Report a Price
                                 </Link>
                             </li>
-                            {/* Call to Action Button */}
+
+                            {/* Alerts Button */}
                             <li className="nav-item ms-lg-3 mt-2 mt-lg-0">
                                 <button
                                     className="btn text-white rounded-pill px-4 shadow-sm"
                                     style={{ backgroundColor: "#10b981" }}
                                 >
                                     Alerts
+                                </button>
+                            </li>
+
+                            {/* LOGOUT BUTTON - Red/Dark Outline for contrast */}
+                            <li className="nav-item ms-lg-2 mt-2 mt-lg-0">
+                                <button
+                                    onClick={handleLogout}
+                                    className="btn btn-outline-danger rounded-pill px-4 shadow-sm"
+                                >
+                                    Logout
                                 </button>
                             </li>
                         </ul>
