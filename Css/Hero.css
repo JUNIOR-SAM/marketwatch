@@ -1,6 +1,6 @@
 /* Pushes the hero section down so it doesn't hide behind your floating navbar */
 .hero-section {
-  padding-top: 60px; 
+  padding-top: 20px; 
   padding-bottom: 50px;
 }
 

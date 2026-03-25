@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, addDoc, collection } from 'firebase/firestore'; // ADDED addDoc and collection
 import { db } from '../src/firebase'; 
 
 const ReportPrice = () => {
   const [itemName, setItemName] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
-  const [market, setMarket] = useState(''); // NEW: Added Market state
+  const [market, setMarket] = useState(''); 
   const [newPrice, setNewPrice] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
 
@@ -16,20 +16,29 @@ const ReportPrice = () => {
 
     try {
       const formattedItem = itemName.toLowerCase().trim();
-      const itemRef = doc(db, 'current_prices', formattedItem);
+      const now = new Date(); // Current timestamp
 
-      // Now saving State, City, AND Market to Firebase
+      // 1. Update the Main Price (What you already had)
+      const itemRef = doc(db, 'current_prices', formattedItem);
       await setDoc(itemRef, {
         average_price: Number(newPrice),
         last_reported_state: state,
         last_reported_city: city,
-        last_reported_market: market, // NEW: Added to database
-        updatedAt: new Date()
+        last_reported_market: market,
+        updatedAt: now
       }, { merge: true });
 
-      // Clear all fields
+      // 2. NEW: Save to a History collection (This triggers the Alerts for others)
+      await addDoc(collection(db, 'price_reports'), {
+        itemName: formattedItem,
+        price: Number(newPrice),
+        state: state,
+        city: city,
+        market: market,
+        createdAt: now // THIS is what the Alert badge looks for
+      });
+
       setItemName(''); setState(''); setCity(''); setMarket(''); setNewPrice('');
-      
       setStatusMessage('✅ Success! Your report is now live for the community.');
       setTimeout(() => setStatusMessage(''), 4000);
 
@@ -40,8 +49,10 @@ const ReportPrice = () => {
   };
 
   return (
+    // ... rest of your return code stays exactly the same ...
     <div className="container mt-5 py-5" style={{ maxWidth: '750px' }}>
-      <div className="card shadow-lg border-0 rounded-4 p-4 p-md-5">
+      {/* ... keeping all your original UI ... */}
+       <div className="card shadow-lg border-0 rounded-4 p-4 p-md-5">
         <div className="text-center mb-4">
           <span className="badge bg-light text-success mb-2 px-3 py-2 rounded-pill border">Crowdsource Data</span>
           <h2 className="fw-bold" style={{ color: '#0f172a' }}>Report a Market Price</h2>
@@ -64,7 +75,6 @@ const ReportPrice = () => {
               <input type="text" className="form-control bg-light border-0" placeholder="Ogbomoso" value={city} onChange={(e) => setCity(e.target.value)} required />
             </div>
             <div className="col-md-4">
-              {/* NEW: Market Input Field */}
               <label className="form-label fw-bold">Market Name</label>
               <input type="text" className="form-control bg-light border-0" placeholder="e.g., Sabo Market" value={market} onChange={(e) => setMarket(e.target.value)} required />
             </div>

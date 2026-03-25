@@ -22,7 +22,7 @@ body {
   background: rgba(255, 255, 255, 0.85) !important; /* Semi-transparent white */
   backdrop-filter: blur(12px); /* The "Glass" blur effect */
   border-radius: 50px; /* Pill shape */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Soft, elegant shadow */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.171); /* Soft, elegant shadow */
   padding: 10px 25px !important;
   border: 1px solid rgba(255, 255, 255, 0.4);
   transition: all 0.3s ease;
@@ -44,8 +44,8 @@ body {
 /* Make it full width on mobile so it doesn't look cramped */
 @media (max-width: 991px) {
   .custom-navbar {
-    width: 95%;
-    border-radius: 20px; /* Less rounded on mobile */
+    width: 100%;
+    border-radius: 10px; /* Less rounded on mobile */
   }
   
   .custom-navbar .nav-link {
@@ -53,3 +53,4 @@ body {
     margin: 10px 0;
   }
 }
+

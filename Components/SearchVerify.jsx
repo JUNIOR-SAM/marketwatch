@@ -50,7 +50,7 @@ const SearchVerify = () => {
                     <form onSubmit={handleSearch} className="d-flex shadow-sm rounded-pill overflow-hidden mb-4" style={{ border: '2px solid #10b981' }}>
                         <input
                             type="text"
-                            className="form-control border-0 shadow-none px-4 py-3"
+                            className="form-control border-0 shadow-none px-4 py-2"
                             placeholder="e.g., Petrol, Rice, Data..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
