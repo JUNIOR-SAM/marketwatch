@@ -1,9 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-// Change this import in App.jsx
-// import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+// MUST use HashRouter for GitHub Pages to avoid 404s on refresh
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
-// The rest of your App.jsx stays the same!
 import Nav from '../Components/Nav.jsx';
 import Hero from '../Components/Hero.jsx';
 import SearchVerify from '../Components/SearchVerify.jsx';
@@ -17,14 +15,19 @@ import './App.css';
 const AppContent = () => {
   const location = useLocation();
   
-  // Hide Navbar on Signup (/) and Signin (/signin)
-// Change this line:
-const isAuthPage = ['/', '/signin', ''].includes(location.pathname.replace(/\/$/, ""));
+  // Clean logic to hide Navbar on Auth pages
+  // We check for '/', '/signin', and empty paths
+  const authPaths = ['/', '/signin', ''];
+  const currentPath = location.pathname.replace(/\/$/, ""); 
+  const isAuthPage = authPaths.includes(currentPath) || location.pathname === "/marketwatch/";
+
   return (
     <div className={isAuthPage ? "auth-bg" : ""}>
+      {/* Navbar only shows when NOT on Sign Up or Sign In */}
       {!isAuthPage && <Nav />}
       
       <Routes>
+        {/* Default Landing Page */}
         <Route path="/" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         
@@ -35,9 +38,12 @@ const isAuthPage = ['/', '/signin', ''].includes(location.pathname.replace(/\/$/
             <SearchVerify />
           </>
         } />
+        
         <Route path="/report" element={<ReportPrice />} />
         <Route path="/live-prices" element={<LivePrices />} />
-        
+
+        {/* Catch-all: Redirects any unknown path (like /marketwatch/) to SignUp */}
+        <Route path="*" element={<SignUp />} />
       </Routes>
     </div>
   );
@@ -51,4 +57,4 @@ const App = () => {
   );
 };
 
-export default App; 
+export default App;
