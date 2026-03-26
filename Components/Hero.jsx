@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth'; // ADDED for Name
+import { getAuth } from 'firebase/auth'; 
 import { db } from '../src/firebase'; 
 import '../Css/Hero.css';
 
@@ -8,7 +8,17 @@ const Hero = () => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  // Logic for the name (Google Name or Email prefix)
+  // --- TIME ADAPTIVE LOGIC ADDED ---
+  const [greeting, setGreeting] = useState("Welcome back");
+  
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting("Good Morning");
+    else if (hour < 18) setGreeting("Good Afternoon");
+    else setGreeting("Good Evening");
+  }, []);
+  // ---------------------------------
+
   const displayName = user?.displayName || user?.email?.split('@')[0] || "Trader";
 
   const [petrolPrice, setPetrolPrice] = useState("Loading...");
@@ -31,15 +41,14 @@ const Hero = () => {
   return (
     <div className="container text-center hero-section">
       
-      {/* ADDED: Personal Welcome Banner */}
-    {/* We are using -40px to pull it up. You can adjust this number! */}
-<div className="d-flex justify-content-center mb-3 "> 
-    <div className="alert border shadow-sm border-success bg-white rounded-pill px-4 py-2 d-flex align-items-center">
-        <span className="me-2 text-small">👋</span>
-        <span className="text-muted small">Welcome back, </span>
-        <span className="ms-1 fw-bold text-dark small">{displayName}</span>
-    </div>
-</div>
+      {/* PERSONAL WELCOME BANNER (Kept exactly as you styled it) */}
+      <div className="d-flex justify-content-center mb-3"> 
+        <div className="alert border shadow-sm border-success bg-white rounded-pill px-4 py-2 d-flex align-items-center">
+            <span className="me-2 text-small">👋</span>
+            <span className="text-muted small">{greeting}, </span> {/* Changed static text to {greeting} */}
+            <span className="ms-1 fw-bold text-dark small">{displayName}</span>
+        </div>
+      </div>
 
       <div className="mb-5">
         <h1 className="fw-bold display-4" style={{ color: '#0f172a' }}>
@@ -50,10 +59,10 @@ const Hero = () => {
         </p>
       </div>
 
-      {/* KEPT: Your 3 Price Cards (Fuel, Rice, Data) */}
+      {/* YOUR 3 PRICE CARDS (Unchanged) */}
       <div className="row g-4 justify-content-center">
         <div className="col-12 col-md-4">
-          <div className="card price-card border-0">
+          <div className="card price-card border-0 shadow-sm"> {/* Added shadow-sm here to make it look "bigger/lively" as requested */}
             <div className="card-body py-4">
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="text-muted fw-semibold">Petrol (1 Liter)</span>
@@ -66,7 +75,7 @@ const Hero = () => {
         </div>
 
         <div className="col-12 col-md-4">
-          <div className="card price-card border-0">
+          <div className="card price-card border-0 shadow-sm">
             <div className="card-body py-4">
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="text-muted fw-semibold">Rice (50kg Bag)</span>
@@ -79,7 +88,7 @@ const Hero = () => {
         </div>
 
         <div className="col-12 col-md-4">
-          <div className="card price-card border-0">
+          <div className="card price-card border-0 shadow-sm">
             <div className="card-body py-4">
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <span className="text-muted fw-semibold">Data (1GB - MTN)</span>

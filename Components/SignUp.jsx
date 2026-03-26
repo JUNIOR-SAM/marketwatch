@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { auth, googleProvider } from '../src/firebase';
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth'; // Added updateProfile
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUp = () => {
@@ -37,24 +37,24 @@ const SignUp = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      // Keeping your preferred Popup style
       await signInWithPopup(auth, googleProvider);
       navigate('/dashboard'); 
     } catch (err) {
-      setError(err.message);
+      if (err.code === 'auth/popup-blocked') {
+        setError("Please allow pop-ups for this website to continue.");
+      } else {
+        setError(err.message);
+      }
     }
   };
 
   return (
     <div className="auth-container">
-      {/* Animated Background Circles */}
-    <div className="blob b1"></div>
-    <div className="blob b2"></div>
-    <div className="blob b3"></div>
-    <div className="blob b4"></div>
-    <div className="blob b5"></div>
-    <div className="blob b6"></div>
-    <div className="blob b7"></div>
-    <div className="blob b8"></div>
+      <div className="blob b1"></div><div className="blob b2"></div>
+      <div className="blob b3"></div><div className="blob b4"></div>
+      <div className="blob b5"></div><div className="blob b6"></div>
+      <div className="blob b7"></div><div className="blob b8"></div>
 
       <div className="auth-brand pb-lg-5 text-center">
          <span style={{ color: '#10b981' }}>Market</span>Watch
@@ -67,14 +67,30 @@ const SignUp = () => {
         <form onSubmit={handleEmailSignup}>
           <div className="mb-3">
             <label className="form-label small fw-bold">Email</label>
-            <input type="email" className="form-control bg-light border-0" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input 
+              type="email" 
+              className="form-control bg-light border-0" 
+              placeholder="your@email.com" 
+              autoComplete="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
           </div>
           <div className="mb-4">
             <label className="form-label small fw-bold">Password</label>
-            <input type="password" className="form-control bg-light border-0" placeholder="StrongPassword123" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input 
+              type="password" 
+              className="form-control bg-light border-0" 
+              placeholder="StrongPassword123" 
+              autoComplete="new-password" // Added to fix console warning
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
             <div className="form-text mt-2" style={{fontSize: '11px'}}>Min 8 chars, including A, a, and 123.</div>
           </div>
-          <button type="submit" className="btn btn-success w-100 rounded-pill fw-bold mb-3 py-2">Sign Up</button>
+          <button type="submit" className="btn btn-success w-100 rounded-pill fw-bold mb-3 py-2 shadow-sm">Sign Up</button>
         </form>
 
         <div className="text-center my-3 text-muted small">OR</div>

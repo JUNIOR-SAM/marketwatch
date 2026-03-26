@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { doc, setDoc, addDoc, collection } from 'firebase/firestore'; // ADDED addDoc and collection
+import { doc, setDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore'; 
+import { getAuth } from 'firebase/auth'; 
 import { db } from '../src/firebase'; 
+import { nigeriaStates } from '../src/Data/nigeria'; // IMPORT THE DATA HERE
 
 const ReportPrice = () => {
+  const auth = getAuth(); 
+  const user = auth.currentUser;
+
   const [itemName, setItemName] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
@@ -10,32 +15,36 @@ const ReportPrice = () => {
   const [newPrice, setNewPrice] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
 
+  const handleStateChange = (e) => {
+    setState(e.target.value);
+    setCity(''); // Reset city when state changes
+  };
+
   const handlePriceSubmit = async (e) => {
     e.preventDefault();
     setStatusMessage('⌛ Broadcasting to MarketWatch Network...');
 
     try {
       const formattedItem = itemName.toLowerCase().trim();
-      const now = new Date(); // Current timestamp
+      const reporterName = user?.displayName || user?.email?.split('@')[0] || "Anonymous";
 
-      // 1. Update the Main Price (What you already had)
       const itemRef = doc(db, 'current_prices', formattedItem);
       await setDoc(itemRef, {
         average_price: Number(newPrice),
         last_reported_state: state,
         last_reported_city: city,
         last_reported_market: market,
-        updatedAt: now
+        updatedAt: serverTimestamp() 
       }, { merge: true });
 
-      // 2. NEW: Save to a History collection (This triggers the Alerts for others)
       await addDoc(collection(db, 'price_reports'), {
         itemName: formattedItem,
         price: Number(newPrice),
         state: state,
         city: city,
         market: market,
-        createdAt: now // THIS is what the Alert badge looks for
+        userName: reporterName,
+        createdAt: serverTimestamp() 
       });
 
       setItemName(''); setState(''); setCity(''); setMarket(''); setNewPrice('');
@@ -49,14 +58,12 @@ const ReportPrice = () => {
   };
 
   return (
-    // ... rest of your return code stays exactly the same ...
-    <div className="container mt-5 py-5" style={{ maxWidth: '750px' }}>
-      {/* ... keeping all your original UI ... */}
+    <div className="container mt-5 py-5" style={{ maxWidth: '850px' }}>
        <div className="card shadow-lg border-0 rounded-4 p-4 p-md-5">
         <div className="text-center mb-4">
-          <span className="badge bg-light text-success mb-2 px-3 py-2 rounded-pill border">Crowdsource Data</span>
+          <span className="badge bg-light text-success mb-2 px-3 py-2 rounded-pill border">B.B Art Marketplace</span>
           <h2 className="fw-bold" style={{ color: '#0f172a' }}>Report a Market Price</h2>
-          <p className="text-muted small">Specify the market so others know exactly where to find this price.</p>
+          <p className="text-muted small">Select your location to help others find the best deals.</p>
         </div>
         
         <form onSubmit={handlePriceSubmit}>
@@ -65,18 +72,39 @@ const ReportPrice = () => {
             <input type="text" className="form-control form-control-lg bg-light border-0" placeholder="e.g., Garri, Yam, Petrol..." value={itemName} onChange={(e) => setItemName(e.target.value)} required />
           </div>
 
-          <div className="row g-3 mb-3">
+          <div className="row g-3 mb-4">
+            {/* STATE DROPDOWN */}
             <div className="col-md-4">
-              <label className="form-label fw-bold">State</label>
-              <input type="text" className="form-control bg-light border-0" placeholder="Oyo" value={state} onChange={(e) => setState(e.target.value)} required />
+              <label className="form-label fw-bold small text-uppercase">State</label>
+              <select className="form-select bg-light border-0 py-2" value={state} onChange={handleStateChange} required>
+                <option value="">Choose State</option>
+                {Object.keys(nigeriaStates).sort().map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
+
+            {/* CITY DROPDOWN */}
             <div className="col-md-4">
-              <label className="form-label fw-bold">City</label>
-              <input type="text" className="form-control bg-light border-0" placeholder="Ogbomoso" value={city} onChange={(e) => setCity(e.target.value)} required />
+              <label className="form-label fw-bold small text-uppercase">City/LGA</label>
+              <select 
+                className="form-select bg-light border-0 py-2" 
+                value={city} 
+                onChange={(e) => setCity(e.target.value)} 
+                required 
+                disabled={!state}
+              >
+                <option value="">{state ? "Select City" : "Pick State"}</option>
+                {state && nigeriaStates[state].sort().map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
+
+            {/* MARKET INPUT */}
             <div className="col-md-4">
-              <label className="form-label fw-bold">Market Name</label>
-              <input type="text" className="form-control bg-light border-0" placeholder="e.g., Sabo Market" value={market} onChange={(e) => setMarket(e.target.value)} required />
+              <label className="form-label fw-bold small text-uppercase">Market Name</label>
+              <input type="text" className="form-control bg-light border-0 py-2" placeholder="Sabo, Bodija, etc." value={market} onChange={(e) => setMarket(e.target.value)} required />
             </div>
           </div>
 
@@ -86,12 +114,12 @@ const ReportPrice = () => {
           </div>
 
           <button type="submit" className="btn btn-lg w-100 text-white rounded-pill shadow-sm fw-bold" style={{ backgroundColor: '#10b981' }}>
-            Submit Live Price
+            Broadcasting Live Price
           </button>
         </form>
 
         {statusMessage && (
-          <div className="alert alert-success mt-4 rounded-3 border-0 text-center fw-medium">
+          <div className="alert alert-success mt-4 rounded-3 border-0 text-center fw-medium shadow-sm">
             {statusMessage}
           </div>
         )}
