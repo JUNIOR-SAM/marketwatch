@@ -3,7 +3,6 @@ import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-d
 
 // Lively Components
 import Ticker from '../Components/Ticker.jsx';
-// Leaderboard import removed
 
 // Core Components
 import Nav from '../Components/Nav.jsx';
@@ -13,14 +12,18 @@ import ReportPrice from '../Components/ReportPrice.jsx';
 import SignUp from '../Components/SignUp.jsx'; 
 import SignIn from '../Components/SignIn.jsx'; 
 import LivePrices from '../Components/LivePrices.jsx';
+import MyReports from '../Components/MyReports.jsx'; // ADDED
 import './App.css';
 
 const AppContent = () => {
   const location = useLocation();
   
-  const authPaths = ['/', '/signin', ''];
+  // FIXED: Strictly define auth paths
+  const authPaths = ['/', '/signin', '/signup'];
   const currentPath = location.pathname.replace(/\/$/, ""); 
-  const isAuthPage = authPaths.includes(currentPath) || location.pathname === "/marketwatch/";
+  
+  // If the current path is one of the authPaths, it's an Auth Page
+  const isAuthPage = authPaths.includes(currentPath) || currentPath === "";
 
   return (
     <div className={isAuthPage ? "auth-bg" : ""}>
@@ -35,13 +38,14 @@ const AppContent = () => {
           <>
             <Hero />
             <SearchVerify />
-            {/* Leaderboard removed for a cleaner B.B Art look */}
           </>
         } />
         
         <Route path="/report" element={<ReportPrice />} />
         <Route path="/live-prices" element={<LivePrices />} />
+        <Route path="/my-reports" element={<MyReports />} /> {/* ADDED ROUTE */}
 
+        {/* Catch-all sends users to SignUp if page doesn't exist */}
         <Route path="*" element={<SignUp />} />
       </Routes>
     </div>

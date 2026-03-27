@@ -17,16 +17,17 @@ const SearchVerify = () => {
         setResult(null);
 
         try {
+            // NORMALIZATION: Match the lowercase database records
             const formattedQuery = searchQuery.toLowerCase().trim();
             const docRef = doc(db, 'current_prices', formattedQuery);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                const data = docSnap.data(); // Get all data from the document
+                const data = docSnap.data(); 
                 setResult({
-                    name: searchQuery,
+                    name: searchQuery, // Keep the user's typed name for display
                     price: data.average_price,
-                    market: data.last_reported_market, // Make sure we grab the market name!
+                    market: data.last_reported_market, 
                     city: data.last_reported_city
                 });
             } else {
@@ -80,7 +81,6 @@ const SearchVerify = () => {
                             <div className="d-flex justify-content-center gap-3 mt-3">
                                 <div className="text-start">
                                     <small className="text-muted d-block">Last Location</small>
-                                    {/* We use result.market here so it shows the REAL market name */}
                                     <span className="fw-bold text-capitalize">{result.market || 'General Market'}</span>
                                 </div>
                                 <div className="vr"></div>
