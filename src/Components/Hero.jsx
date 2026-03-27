@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth'; 
-import { db } from '../src/firebase'; 
+import { db } from '../firebase'; 
 import '../Css/Hero.css';
 
 const Hero = () => {

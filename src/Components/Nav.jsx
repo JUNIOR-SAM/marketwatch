@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth"; 
 import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
-import { db } from "../src/firebase"; 
+import { db } from "../firebase"; 
 import "../Css/Nav.css";
 
 const Nav = () => {

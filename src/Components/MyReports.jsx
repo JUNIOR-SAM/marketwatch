@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'; 
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; 
-import { db } from '../src/firebase';
+import { db } from '../firebase';
 
 const MyReports = () => {
   const [reports, setReports] = useState([]);

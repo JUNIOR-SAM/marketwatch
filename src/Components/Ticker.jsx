@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db } from '../src/firebase'; 
+import { db } from '../firebase'; 
 
 const Ticker = () => {
   const [latestReports, setLatestReports] = useState([]);

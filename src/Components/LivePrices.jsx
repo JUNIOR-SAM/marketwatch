@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { collection, query, orderBy, onSnapshot, limit } from "firebase/firestore";
-import { db } from "../src/firebase";
+import { db } from "../firebase";
 import "../Css/MarketTerminal.css"; // Make sure to create this CSS file!
 
 const MarketTerminal = () => {

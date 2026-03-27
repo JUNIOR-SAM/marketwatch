@@ -6,10 +6,10 @@ import App from './App.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
 
-// 2. Custom CSS (Keep this below Bootstrap so your custom styles win)
+// 2. Custom CSS (Update this path if index.css is inside your Css folder)
+// If index.css is just in 'src', leave as is. If it's in 'src/Css', use './Css/index.css'
 import './index.css'; 
 
-// 3. The single, correct render function
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />

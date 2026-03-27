@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { doc, setDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore'; 
 import { getAuth } from 'firebase/auth'; 
-import { db } from '../src/firebase'; 
-import { nigeriaStates } from '../src/Data/nigeria'; 
+import { db } from '../firebase'; 
+import { nigeriaStates } from '../Data/nigeria'; 
 
 const ReportPrice = () => {
   const auth = getAuth(); 

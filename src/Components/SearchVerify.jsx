@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, collection, onSnapshot } from 'firebase/firestore'; // Added collection, onSnapshot
-import { db } from '../src/firebase';
+import { db } from '../firebase';
 import { Link } from 'react-router-dom'; // Added Link
 
 const SearchVerify = () => {
