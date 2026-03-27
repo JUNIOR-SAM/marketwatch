@@ -56,7 +56,7 @@ const ReportPrice = () => {
 
       // Reset form fields
       setItemName(''); setState(''); setCity(''); setMarket(''); setNewPrice('');
-      setStatusMessage('✅ Success! Your report is now live for the community.');
+      setStatusMessage(' Success! Your report is now live for the community.');
       setTimeout(() => setStatusMessage(''), 4000);
 
     } catch (error) {

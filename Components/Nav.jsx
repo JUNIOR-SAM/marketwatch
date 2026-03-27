@@ -112,11 +112,11 @@ const Nav = () => {
                                 opacity: alertCount > 0 ? 1 : 0.5 
                             }}
                         >
-                            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style={{ width: "40px", height: "40px" }}>
+                            <div className="bg-light rounded-circle d-flex align-items-center justify-content-center border border-success border-2 shadow-sm" style={{ width: "40px", height: "40px" }}>
                                 🔔
                             </div>
                             {alertCount > 0 && (
-                                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style={{ fontSize: '0.6rem' }}>
+                                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white " style={{ fontSize: '0.8rem',width: "25px", height: "25px",left: '75%', marginTop: '10px' }}>
                                     {alertCount}
                                 </span>
                             )}
@@ -164,7 +164,7 @@ const Nav = () => {
                                     Alerts
                                 </button>
                                 {alertCount > 0 && (
-                                    <span className="position-absolute translate-middle badge rounded-pill bg-danger shadow" style={{ fontSize: '0.75rem', border: '2px solid white', zIndex: 10, left: '75%', marginTop: '7px' }}>
+                                    <span className="position-absolute translate-middle badge rounded-pill bg-danger shadow" style={{ fontSize: '0.75rem', border: '2px solid white', zIndex: 10, left: '75%', marginTop: '10px' }}>
                                         {alertCount}
                                     </span>
                                 )}
