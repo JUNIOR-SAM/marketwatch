@@ -52,12 +52,8 @@ const AppContent = () => {
 };
 
 const App = () => {
-  const isGitHubPages = window.location.hostname.includes('github.io');
-  const dynamicBasename = isGitHubPages ? "/marketwatch" : "";
-
   return (
     <Router 
-      basename={dynamicBasename} 
       future={{ 
         v7_startTransition: true, 
         v7_relativeSplatPath: true 
