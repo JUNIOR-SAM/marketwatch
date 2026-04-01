@@ -9,6 +9,7 @@ const ReportPrice = () => {
   const user = auth.currentUser;
 
   const [itemName, setItemName] = useState('');
+  const [description, setDescription] = useState(''); // Quantity/Unit
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
   const [market, setMarket] = useState(''); 
@@ -25,13 +26,10 @@ const ReportPrice = () => {
     setStatusMessage('⌛ Broadcasting to MarketWatch Network...');
 
     try {
-      // NORMALIZATION: Force Item to lowercase for searching/indexing
       const formattedItem = itemName.toLowerCase().trim();
-      
-      // CAPITALIZATION LOGIC: First letter Capital, others small for Market Name
       const formattedMarket = market.trim().charAt(0).toUpperCase() + market.trim().slice(1).toLowerCase();
-      
       const reporterName = user?.displayName || user?.email?.split('@')[0] || "Anonymous";
+      const formattedDescription = description.trim(); 
 
       // 1. Update the Main Price Record
       const itemRef = doc(db, 'current_prices', formattedItem);
@@ -39,24 +37,32 @@ const ReportPrice = () => {
         average_price: Number(newPrice),
         last_reported_state: state,
         last_reported_city: city,
-        last_reported_market: formattedMarket, // Now saved as "Sabo" even if typed "sabo"
+        last_reported_market: formattedMarket, 
+        last_reported_unit: formattedDescription, 
         updatedAt: serverTimestamp() 
       }, { merge: true });
 
       // 2. Save to Global Price History
       await addDoc(collection(db, 'price_reports'), {
         itemName: formattedItem,
+        description: formattedDescription, 
         price: Number(newPrice),
         state: state,
         city: city,
-        market: formattedMarket, // Now saved as "Sabo" even if typed "sabo"
+        market: formattedMarket, 
         userName: reporterName,
         createdAt: serverTimestamp() 
       });
 
       // Reset form fields
-      setItemName(''); setState(''); setCity(''); setMarket(''); setNewPrice('');
-      setStatusMessage(' Success! Your report is now live for the community.');
+      setItemName(''); 
+      setDescription(''); 
+      setState(''); 
+      setCity(''); 
+      setMarket(''); 
+      setNewPrice('');
+      
+      setStatusMessage('✅ Success! Your report is now live for the community.');
       setTimeout(() => setStatusMessage(''), 4000);
 
     } catch (error) {
@@ -67,6 +73,22 @@ const ReportPrice = () => {
 
   return (
     <div className="container mt-5 py-5" style={{ maxWidth: '850px' }}>
+      
+      {/* --- THIS IS THE FIX FOR THE PLACEHOLDER OPACITY --- */}
+      <style>{`
+        .form-control::placeholder {
+          color: #9ca3af !important;
+          opacity: 0.6 !important;
+        }
+        .form-select:invalid {
+          color: #9ca3af !important;
+        }
+        .form-select option {
+          color: #1f2937 !important;
+        }
+      `}</style>
+      {/* --------------------------------------------------- */}
+
        <div className="card shadow-lg border-0 rounded-4 p-4 p-md-5">
         <div className="text-center mb-4">
           <span className="badge bg-light text-success mb-2 px-3 py-2 rounded-pill border">Marketwatch</span>
@@ -75,23 +97,38 @@ const ReportPrice = () => {
         </div>
         
         <form onSubmit={handlePriceSubmit}>
-          <div className="mb-3">
-            <label className="form-label fw-bold">What did you buy?</label>
-            <input 
-              type="text" 
-              className="form-control form-control-lg bg-light border-0" 
-              placeholder="e.g., Garri, Yam, Petrol..." 
-              value={itemName} 
-              onChange={(e) => setItemName(e.target.value)} 
-              required 
-            />
+          
+          <div className="row g-3 mb-4">
+            <div className="col-md-6">
+              <label className="form-label fw-bold">What did you buy?</label>
+              <input 
+                type="text" 
+                className="form-control form-control-lg bg-light border-0" 
+                placeholder="e.g., Garri, Yam, Petrol..." 
+                value={itemName} 
+                onChange={(e) => setItemName(e.target.value)} 
+                required 
+              />
+            </div>
+            
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Quantity / Unit</label>
+              <input 
+                type="text" 
+                className="form-control form-control-lg bg-light border-0" 
+                placeholder="e.g., 1 Derica, 50kg Bag..." 
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                required 
+              />
+            </div>
           </div>
 
           <div className="row g-3 mb-4">
             <div className="col-md-4">
               <label className="form-label fw-bold small text-uppercase">State</label>
               <select className="form-select bg-light border-0 py-2" value={state} onChange={handleStateChange} required>
-                <option value="">Choose State</option>
+                <option value="" disabled hidden>Choose State</option>
                 {Object.keys(nigeriaStates).sort().map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
@@ -107,7 +144,7 @@ const ReportPrice = () => {
                 required 
                 disabled={!state}
               >
-                <option value="">{state ? "Select City" : "Pick State"}</option>
+                <option value="" disabled hidden>{state ? "Select City" : "Pick State"}</option>
                 {state && nigeriaStates[state].sort().map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -131,7 +168,7 @@ const ReportPrice = () => {
             <label className="form-label fw-bold">Price Paid (₦)</label>
             <input 
               type="number" 
-              className="form-control form-control-lg bg-light border-0 text-success fw-bold" 
+              className="form-control form-control-lg bg-light border-0 text-success fw-bold " 
               placeholder="1500" 
               value={newPrice} 
               onChange={(e) => setNewPrice(e.target.value)} 
