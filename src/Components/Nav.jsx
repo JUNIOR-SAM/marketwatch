@@ -111,7 +111,7 @@ const Nav = () => {
                     <div className="d-flex align-items-center ms-auto order-lg-last">
                         {/* MOBILE ALERT ICON - Dimmed if 0 */}
                         <div 
-                            className="d-lg-none position-relative me-3" 
+                            className="d-lg-none position-relative me-1" 
                             onClick={handleAlertClick} 
                             style={{ 
                                 cursor: alertCount > 0 ? 'pointer' : 'default',
