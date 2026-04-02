@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { auth, googleProvider } from '../firebase';
-// NEW: Imported signInWithRedirect
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect } from 'firebase/auth'; 
+// NEW: Imported onAuthStateChanged
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, onAuthStateChanged } from 'firebase/auth'; 
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUp = () => {
@@ -10,6 +10,16 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // THE MAGIC FIX: Watches for returning Google Redirect users (or returning logged-in users)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
   const validatePassword = (pass) => {
     const hasUpperCase = /[A-Z]/.test(pass);
@@ -31,24 +41,21 @@ const SignUp = () => {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      // Left navigate here for standard email flow, though useEffect would catch it too!
       navigate('/signin'); 
     } catch (err) {
       setError(err.code === 'auth/email-already-in-use' ? "This email is already registered." : err.message);
     }
   };
 
-  // UPDATED: Smart Mobile Detection for Google Login
   const handleGoogleLogin = async () => {
     try {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       
       if (isMobile) {
-        // Mobile device: Use redirect to bypass popup blockers
         await signInWithRedirect(auth, googleProvider);
       } else {
-        // Desktop: Use the standard popup
         await signInWithPopup(auth, googleProvider);
-        navigate('/dashboard'); 
       }
     } catch (err) {
       if (err.code === 'auth/popup-blocked') {
@@ -111,7 +118,6 @@ const SignUp = () => {
                 className="position-absolute top-50 end-0 translate-middle-y pe-3" 
                 style={{ cursor: 'pointer', color: '#94a3b8' }}
                 onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? "Hide password" : "Show password"}
               >
                 <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'} fs-5`}></i>
               </span>
