@@ -11,6 +11,9 @@ const Nav = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [alertCount, setAlertCount] = useState(0);
     const navRef = useRef(null);
+    
+    // NEW: State to control the Logout Modal
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -68,7 +71,6 @@ const Nav = () => {
     };
 
     const handleAlertClick = () => {
-        // FIXED: Stop the function if there are no new alerts
         if (alertCount <= 0) return;
 
         closeMenu();
@@ -78,18 +80,22 @@ const Nav = () => {
         navigate("/live-prices");
     };
 
-    const handleLogout = async () => {
+    // NEW: Function just to open the modal
+    const handleLogoutClick = () => {
         closeMenu();
-        const confirmLogout = window.confirm("Are you sure you want to logout of MarketWatch?");
-        if (confirmLogout) {
-            try {
-                // Clear alerts for the next session
-                localStorage.setItem("lastCheckedAlerts", Date.now().toString());
-                await signOut(auth);
-                navigate("/signin"); 
-            } catch (error) {
-                console.error("Error logging out:", error.message);
-            }
+        setShowLogoutModal(true);
+    };
+
+    // NEW: Function that actually performs the Firebase logout
+    const confirmLogout = async () => {
+        try {
+            // Clear alerts for the next session
+            localStorage.setItem("lastCheckedAlerts", Date.now().toString());
+            await signOut(auth);
+            setShowLogoutModal(false); // Close modal
+            navigate("/signin"); 
+        } catch (error) {
+            console.error("Error logging out:", error.message);
         }
     };
 
@@ -171,7 +177,8 @@ const Nav = () => {
                             </li>
 
                             <li className="nav-item ms-lg-2 mt-3 mt-lg-0 mb-lg-0 mb-3">
-                                <button onClick={handleLogout} className="btn btn-outline-danger rounded-pill px-4 shadow-sm w-100 w-lg-auto">
+                                {/* UPDATED: This now triggers the custom modal instead of window.confirm */}
+                                <button onClick={handleLogoutClick} className="btn btn-outline-danger rounded-pill px-4 shadow-sm w-100 w-lg-auto">
                                     Logout
                                 </button>
                             </li>
@@ -179,6 +186,31 @@ const Nav = () => {
                     </div>
                 </div>
             </nav>
+
+            {/* =========================================
+                LOGOUT CONFIRMATION MODAL
+                ========================================= */}
+            {showLogoutModal && (
+                <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', zIndex: 1050, backdropFilter: 'blur(3px)' }}>
+                    <div className="card border-0 shadow-lg p-4 rounded-4 text-center" style={{ maxWidth: '350px', width: '90%' }}>
+                        <div className="mb-3 text-danger">
+                            {/* Uses a cool "door exit" icon to represent logging out */}
+                            <i className="bi bi-box-arrow-right" style={{ fontSize: '3rem' }}></i>
+                        </div>
+                        <h4 className="fw-bold mb-2">Ready to leave?</h4>
+                        <p className="text-muted small mb-4">Are you sure you want to log out of your MarketWatch account?</p>
+                        
+                        <div className="d-flex gap-3 justify-content-center">
+                            <button className="btn btn-light fw-bold px-4 rounded-pill" onClick={() => setShowLogoutModal(false)}>
+                                Cancel
+                            </button>
+                            <button className="btn btn-danger fw-bold px-4 rounded-pill" onClick={confirmLogout}>
+                                Yes, Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
