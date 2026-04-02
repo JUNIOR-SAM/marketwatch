@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { auth, googleProvider } from '../firebase';
-// NEW: Imported onAuthStateChanged
-import { createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, onAuthStateChanged } from 'firebase/auth'; 
+import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth'; 
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUp = () => {
@@ -10,16 +9,6 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false); 
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // THE MAGIC FIX: Watches for returning Google Redirect users (or returning logged-in users)
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate('/dashboard');
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
 
   const validatePassword = (pass) => {
     const hasUpperCase = /[A-Z]/.test(pass);
@@ -41,7 +30,6 @@ const SignUp = () => {
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      // Left navigate here for standard email flow, though useEffect would catch it too!
       navigate('/signin'); 
     } catch (err) {
       setError(err.code === 'auth/email-already-in-use' ? "This email is already registered." : err.message);
@@ -50,13 +38,9 @@ const SignUp = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
-      } else {
-        await signInWithPopup(auth, googleProvider);
-      }
+      // Back to the trusty Pop-up!
+      await signInWithPopup(auth, googleProvider);
+      navigate('/dashboard'); 
     } catch (err) {
       if (err.code === 'auth/popup-blocked') {
         setError("Please allow pop-ups for this website to continue.");

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { auth, googleProvider } from '../firebase';
-// NEW: Imported onAuthStateChanged
-import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignIn = () => {
@@ -11,23 +10,11 @@ const SignIn = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // THE MAGIC FIX: This constantly watches for a logged-in user.
-  // The moment you return from the Google redirect, Firebase recognizes you, 
-  // this triggers, and it pushes you straight to the dashboard.
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate('/dashboard');
-      }
-    });
-    return () => unsubscribe(); // Cleanup listener on unmount
-  }, [navigate]);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Removed navigate from here because the useEffect above handles it now!
+      navigate('/dashboard'); 
     } catch (err) {
       setError("Invalid email or password. Please try again.");
     }
@@ -35,13 +22,9 @@ const SignIn = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
-      } else {
-        await signInWithPopup(auth, googleProvider);
-      }
+      // Back to the trusty Pop-up!
+      await signInWithPopup(auth, googleProvider);
+      navigate('/dashboard');
     } catch (err) {
       if (err.code === 'auth/popup-blocked') {
         setError("Please allow pop-ups for this website to sign in with Google.");
